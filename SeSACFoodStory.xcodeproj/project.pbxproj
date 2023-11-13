@@ -9,21 +9,24 @@
 /* Begin PBXBuildFile section */
 		89DB39752B01E6E000159764 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DB39742B01E6E000159764 /* AppDelegate.swift */; };
 		89DB39772B01E6E000159764 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DB39762B01E6E000159764 /* SceneDelegate.swift */; };
-		89DB39792B01E6E000159764 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DB39782B01E6E000159764 /* ViewController.swift */; };
+		89DB39792B01E6E000159764 /* LoginHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DB39782B01E6E000159764 /* LoginHomeViewController.swift */; };
 		89DB397E2B01E6E100159764 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89DB397D2B01E6E100159764 /* Assets.xcassets */; };
 		89DB39812B01E6E100159764 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 89DB397F2B01E6E100159764 /* LaunchScreen.storyboard */; };
 		89DB398A2B01E8A000159764 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DB39892B01E8A000159764 /* BaseViewController.swift */; };
+		89DB398F2B01EB3200159764 /* UIButton.Configuration+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89DB398E2B01EB3200159764 /* UIButton.Configuration+.swift */; };
+		89DB39922B01F21800159764 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 89DB39912B01F21800159764 /* SnapKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		89DB39712B01E6E000159764 /* SeSACFoodStory.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SeSACFoodStory.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		89DB39742B01E6E000159764 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		89DB39762B01E6E000159764 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		89DB39782B01E6E000159764 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		89DB39782B01E6E000159764 /* LoginHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginHomeViewController.swift; sourceTree = "<group>"; };
 		89DB397D2B01E6E100159764 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		89DB39802B01E6E100159764 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89DB39822B01E6E100159764 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		89DB39892B01E8A000159764 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		89DB398E2B01EB3200159764 /* UIButton.Configuration+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton.Configuration+.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89DB39922B01F21800159764 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,8 +62,7 @@
 			children = (
 				89DB39742B01E6E000159764 /* AppDelegate.swift */,
 				89DB39762B01E6E000159764 /* SceneDelegate.swift */,
-				89DB39782B01E6E000159764 /* ViewController.swift */,
-				89DB39882B01E89200159764 /* Base */,
+				89DB398B2B01E97C00159764 /* Presentation */,
 				89DB397D2B01E6E100159764 /* Assets.xcassets */,
 				89DB397F2B01E6E100159764 /* LaunchScreen.storyboard */,
 				89DB39822B01E6E100159764 /* Info.plist */,
@@ -73,6 +76,32 @@
 				89DB39892B01E8A000159764 /* BaseViewController.swift */,
 			);
 			path = Base;
+			sourceTree = "<group>";
+		};
+		89DB398B2B01E97C00159764 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				89DB39882B01E89200159764 /* Base */,
+				89DB398C2B01E98B00159764 /* Login */,
+				89DB398D2B01EB1300159764 /* Extension */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		89DB398C2B01E98B00159764 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				89DB39782B01E6E000159764 /* LoginHomeViewController.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		89DB398D2B01EB1300159764 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				89DB398E2B01EB3200159764 /* UIButton.Configuration+.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -91,6 +120,9 @@
 			dependencies = (
 			);
 			name = SeSACFoodStory;
+			packageProductDependencies = (
+				89DB39912B01F21800159764 /* SnapKit */,
+			);
 			productName = SeSACFoodStory;
 			productReference = 89DB39712B01E6E000159764 /* SeSACFoodStory.app */;
 			productType = "com.apple.product-type.application";
@@ -119,6 +151,9 @@
 				Base,
 			);
 			mainGroup = 89DB39682B01E6DF00159764;
+			packageReferences = (
+				89DB39902B01F21800159764 /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			productRefGroup = 89DB39722B01E6E000159764 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -145,9 +180,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				89DB39792B01E6E000159764 /* ViewController.swift in Sources */,
+				89DB39792B01E6E000159764 /* LoginHomeViewController.swift in Sources */,
 				89DB398A2B01E8A000159764 /* BaseViewController.swift in Sources */,
 				89DB39752B01E6E000159764 /* AppDelegate.swift in Sources */,
+				89DB398F2B01EB3200159764 /* UIButton.Configuration+.swift in Sources */,
 				89DB39772B01E6E000159764 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -361,6 +397,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		89DB39902B01F21800159764 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		89DB39912B01F21800159764 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 89DB39902B01F21800159764 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 89DB39692B01E6DF00159764 /* Project object */;
 }
