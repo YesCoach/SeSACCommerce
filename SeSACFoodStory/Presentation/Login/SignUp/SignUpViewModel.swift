@@ -9,6 +9,12 @@ import Foundation
 
 final class SignUpViewModel: BaseViewModel {
 
+    private let loginRepository: LoginRepository
+
+    init(loginRepository: LoginRepository) {
+        self.loginRepository = loginRepository
+    }
+
     struct Input {
 
     }

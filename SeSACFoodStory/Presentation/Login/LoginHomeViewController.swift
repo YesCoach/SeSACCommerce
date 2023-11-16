@@ -122,7 +122,7 @@ private extension LoginHomeViewController {
         signUpButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.navigationController?.pushViewController(
-                    SignUpViewController(),
+                    DIContainer.shared.makeSignUpViewController(),
                     animated: true
                 )
             }
