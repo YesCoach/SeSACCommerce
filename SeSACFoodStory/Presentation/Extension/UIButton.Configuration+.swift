@@ -33,4 +33,23 @@ extension UIButton.Configuration {
         return config
     }
 
+    static func textButtonConfig(
+        title: String = "",
+        image: UIImage? = nil,
+        foregroundColor: UIColor
+    ) -> UIButton.Configuration {
+        var config = UIButton.Configuration.plain()
+        config.attributedTitle = AttributedString(
+            title,
+            attributes: .init(
+                [.font: UIFont.systemFont(ofSize: 14.0, weight: .semibold)]
+            )
+        )
+        config.baseForegroundColor = foregroundColor
+        config.image = image
+        config.imagePlacement = .leading
+        config.imagePadding = 5.0
+        return config
+    }
+
 }
