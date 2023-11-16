@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SignUpResponse: Encodable {
+struct SignUpResponse: Decodable {
     let id: String
     let email: String
     let nick: String

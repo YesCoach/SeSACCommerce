@@ -21,7 +21,11 @@ enum NetworkError: Int, Error {
     case serverError = 500
 }
 
-final class NetworkManager {
+protocol NetworkService {
+    func request<T: TargetType, K: Decodable>(target: T) -> Single<NetworkResult<K>>
+}
+
+final class NetworkManager: NetworkService {
 
     static let shared = NetworkManager()
 
