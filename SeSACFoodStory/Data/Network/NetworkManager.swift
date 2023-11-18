@@ -18,6 +18,9 @@ enum NetworkError: Int, Error {
     case invalidData = 0
     case badRequest = 400
     case conflict = 409
+    case invalidKey = 420
+    case tooManyRequest = 429
+    case noResponse = 444
     case serverError = 500
 }
 
@@ -39,12 +42,15 @@ final class NetworkManager: NetworkService {
                 switch result {
                 case .success(let response):
                     guard let data = try? response.map(K.self) else {
-                        single(.failure(NetworkError.invalidData))
+                        single(.success(.failure(.invalidData)))
+//                        single(.failure(NetworkError.invalidData))
                         return
                     }
                     single(.success(.success(data)))
                 case .failure(let error):
-                    guard let networkError = NetworkError(rawValue: error.errorCode) else {
+                    guard let statusCode = error.response?.statusCode,
+                          let networkError = NetworkError(rawValue: statusCode)
+                    else {
                         single(.failure(error))
                         return
                     }

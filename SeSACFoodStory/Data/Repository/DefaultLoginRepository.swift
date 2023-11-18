@@ -26,18 +26,14 @@ extension DefaultLoginRepository: LoginRepository {
     }
     
     func requestSignUp(
-        email: String,
-        password: String,
-        nickname: String,
-        phoneNum: String? = nil,
-        birthDay: String? = nil
+        signUpInfo: SignUpInfo
     ) -> Single<NetworkResult<SignUpResponse>> {
         let requestBody = SignUpRequest(
-            email: email,
-            password: password,
-            nick: nickname,
-            phoneNum: phoneNum,
-            birthDay: birthDay
+            email: signUpInfo.email,
+            password: signUpInfo.password,
+            nick: signUpInfo.nick,
+            phoneNum: signUpInfo.phoneNumber,
+            birthDay: signUpInfo.birthDay
         )
         return networkService
             .request(target: SeSACAPI.signUp(requestBody: requestBody))

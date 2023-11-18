@@ -6,12 +6,14 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 final class SignUpViewController: BaseViewController {
 
     private let contentView: UIView = UIView()
 
-    private lazy var idTextField: UITextField = .roundTextField(
+    private lazy var emailTextField: UITextField = .roundTextField(
         placeHolder: "이메일을 입력하세요",
         keyboardType: .default
     )
@@ -47,6 +49,7 @@ final class SignUpViewController: BaseViewController {
     )
 
     private let viewModel: SignUpViewModel
+    private let disposeBag = DisposeBag()
 
     init(viewModel: SignUpViewModel) {
         self.viewModel = viewModel
@@ -60,6 +63,7 @@ final class SignUpViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addGestureRecognizer(backgroundTapGesture)
+        bind()
     }
 
     override func configureUI() {
@@ -76,7 +80,7 @@ final class SignUpViewController: BaseViewController {
     override func configureLayout() {
         super.configureLayout()
         [
-            idTextField, passwordTextField, nicknameTextField, phoneNumTextField, signUpButton
+            emailTextField, passwordTextField, nicknameTextField, phoneNumTextField, signUpButton
         ].forEach { contentView.addSubview($0) }
 
         view.addSubview(contentView)
@@ -86,28 +90,28 @@ final class SignUpViewController: BaseViewController {
             $0.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
 
-        idTextField.snp.makeConstraints {
+        emailTextField.snp.makeConstraints {
             $0.top.equalTo(contentView).inset(40)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(50)
         }
 
         passwordTextField.snp.makeConstraints {
-            $0.top.equalTo(idTextField.snp.bottom).offset(20)
-            $0.horizontalEdges.equalTo(idTextField)
-            $0.height.equalTo(idTextField)
+            $0.top.equalTo(emailTextField.snp.bottom).offset(20)
+            $0.horizontalEdges.equalTo(emailTextField)
+            $0.height.equalTo(emailTextField)
         }
 
         nicknameTextField.snp.makeConstraints {
             $0.top.equalTo(passwordTextField.snp.bottom).offset(20)
-            $0.horizontalEdges.equalTo(idTextField)
-            $0.height.equalTo(idTextField)
+            $0.horizontalEdges.equalTo(emailTextField)
+            $0.height.equalTo(emailTextField)
         }
 
         phoneNumTextField.snp.makeConstraints {
             $0.top.equalTo(nicknameTextField.snp.bottom).offset(20)
-            $0.horizontalEdges.equalTo(idTextField)
-            $0.height.equalTo(idTextField)
+            $0.horizontalEdges.equalTo(emailTextField)
+            $0.height.equalTo(emailTextField)
         }
 
         signUpButton.snp.makeConstraints {
@@ -121,4 +125,48 @@ final class SignUpViewController: BaseViewController {
         view.endEditing(true)
     }
 
+}
+
+private extension SignUpViewController {
+
+    func bind() {
+        let input = SignUpViewModel.Input(
+            emailText: emailTextField.rx.text.orEmpty.asObservable(),
+            passwordText: passwordTextField.rx.text.orEmpty.asObservable(),
+            nicknameText: nicknameTextField.rx.text.orEmpty.asObservable(),
+            phoneNumberText: phoneNumTextField.rx.text.orEmpty.asObservable(),
+            signUpButtonTouched: signUpButton.rx.tap.asObservable()
+        )
+
+        let output = viewModel.transform(input: input)
+        
+        output.signUpValidation
+            .asDriver()
+            .drive(signUpButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        output.signUpResponse
+            .asDriver(onErrorJustReturn: .failure(NetworkError.badRequest))
+            .drive(with: self) { owner, result in
+                switch result {
+                case .success(let nick):
+                    print(nick)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        output.emailValidation
+            .asDriver()
+            .map { $0 ? UIColor.systemGreen : UIColor.systemRed }
+            .drive(emailTextField.rx.tintColor)
+            .disposed(by: disposeBag)
+        
+        output.errorText
+            .bind(with: self) { owner, text in
+                print(text)
+            }
+            .disposed(by: disposeBag)
+    }
 }

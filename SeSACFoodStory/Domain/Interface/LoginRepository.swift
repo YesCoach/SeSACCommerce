@@ -14,10 +14,6 @@ protocol LoginRepository {
     ) -> Single<NetworkResult<ValidateEmailResponse>>
     
     func requestSignUp(
-        email: String,
-        password: String,
-        nickname: String,
-        phoneNum: String?,
-        birthDay: String?
+        signUpInfo: SignUpInfo
     ) -> Single<NetworkResult<SignUpResponse>>
 }
