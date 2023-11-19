@@ -150,7 +150,8 @@ private extension SignUpViewController {
             .drive(with: self) { owner, result in
                 switch result {
                 case .success(let nick):
-                    print(nick)
+                    let vc = SignUpSuccessViewController(nickname: nick)
+                    owner.navigationController?.pushViewController(vc, animated: true)
                 case .failure(let error):
                     print(error.localizedDescription)
                 }
