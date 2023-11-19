@@ -53,10 +53,20 @@ final class SignInViewController: BaseViewController {
 
     // MARK: - Property
 
+    private let viewModel: SignInViewModel
     private let disposeBag = DisposeBag()
 
     // MARK: - LifeCycle
 
+    init(viewModel: SignInViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
@@ -128,10 +138,29 @@ private extension SignInViewController {
             }
             .disposed(by: disposeBag)
 
-        passwordTextField.rx.controlEvent(.touchUpInside)
-            .subscribe(with: self) { owner, _ in
+        let input = SignInViewModel.Input(
+            emailText: idTextField.rx.text.orEmpty.asObservable(),
+            password: passwordTextField.rx.text.orEmpty.asObservable(),
+            didSignInButtonTapped: signInButton.rx.tap.asObservable()
+        )
 
+        let output = viewModel.transform(input: input)
+
+        output.isSignInPossible
+            .asDriver()
+            .drive(signInButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+
+        output.signInResponse
+            .bind(with: self) { owner, result in
+                switch result {
+                case .success:
+                    print("로그인 성공")
+                case .failure(let error):
+                    print(error.message)
+                }
             }
+            .disposed(by: disposeBag)
     }
 
 }

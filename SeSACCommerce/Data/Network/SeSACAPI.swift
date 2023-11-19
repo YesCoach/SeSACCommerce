@@ -9,8 +9,12 @@ import Foundation
 import Moya
 
 enum SeSACAPI {
+
+    // MARK: - POST
+
     case signUp(requestBody: SignUpRequest)
     case validateEmail(requestBody: ValidateEmailRequest)
+    case login(requestBody: LoginRequest)
 }
 
 extension SeSACAPI: TargetType {
@@ -23,12 +27,14 @@ extension SeSACAPI: TargetType {
             return "/join"
         case .validateEmail:
             return "/validation/email"
+        case .login:
+            return "/login"
         }
     }
 
     var method: Moya.Method {
         switch self {
-        case .signUp, .validateEmail:
+        case .signUp, .validateEmail, .login:
             return .post
         }
     }
@@ -39,12 +45,14 @@ extension SeSACAPI: TargetType {
             return .requestJSONEncodable(requestBody)
         case .validateEmail(let requestBody):
             return .requestJSONEncodable(requestBody)
+        case .login(let requestBody):
+            return .requestJSONEncodable(requestBody)
         }
     }
 
     var headers: [String: String]? {
         switch self {
-        case .signUp, .validateEmail:
+        default:
             return [
                 "Content-Type": "application/json",
                 "SesacKey": APIKey.SeSACKey
