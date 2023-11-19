@@ -1,5 +1,5 @@
 //
-//  LoginHomeViewController.swift
+//  SignInViewController.swift
 //  SeSACFoodStory
 //
 //  Created by 박태현 on 2023/11/13.
@@ -9,7 +9,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-final class LoginHomeViewController: BaseViewController {
+final class SignInViewController: BaseViewController {
 
     // MARK: - View
 
@@ -116,7 +116,7 @@ final class LoginHomeViewController: BaseViewController {
     }
 }
 
-private extension LoginHomeViewController {
+private extension SignInViewController {
 
     func bind() {
         signUpButton.rx.tap
