@@ -73,6 +73,11 @@ final class SignInViewController: BaseViewController {
         view.addGestureRecognizer(backgroundTapGesture)
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        view.endEditing(true)
+    }
+
     override func configureUI() {
         super.configureUI()
         view.backgroundColor = .systemBackground
@@ -118,6 +123,9 @@ final class SignInViewController: BaseViewController {
     override func configureNavigationBar() {
         super.configureNavigationBar()
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.titleTextAttributes = [
+            NSAttributedString.Key.font : UIFont(name: Font.maplestory, size: 20.0)
+        ]
         navigationItem.backButtonTitle = ""
     }
 

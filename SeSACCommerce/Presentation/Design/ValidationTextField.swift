@@ -11,7 +11,7 @@ class ValidationTextField: UITextField {
 
     private(set) lazy var messageLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13.0, weight: .semibold)
+        label.font = UIFont(name: Font.maplestory, size: 13.0)
         return label
     }()
 
@@ -39,6 +39,7 @@ class ValidationTextField: UITextField {
     private func configureUI() {
         borderStyle = .roundedRect
         backgroundColor = .secondarySystemBackground
+        font = UIFont(name: Font.maplestory, size: 14.0)
     }
 
     private func configureLayout() {

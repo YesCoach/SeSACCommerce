@@ -23,7 +23,7 @@ extension UIButton.Configuration {
         config.attributedTitle = AttributedString(
             title,
             attributes: .init(
-                [.font: UIFont.systemFont(ofSize: 15.0, weight: .bold)]
+                [.font: UIFont(name: Font.maplestory, size: 15.0)]
             )
         )
         config.cornerStyle = .medium
@@ -42,7 +42,7 @@ extension UIButton.Configuration {
         config.attributedTitle = AttributedString(
             title,
             attributes: .init(
-                [.font: UIFont.systemFont(ofSize: 14.0, weight: .semibold)]
+                [.font: UIFont(name: Font.maplestory, size: 15.0)]
             )
         )
         config.baseForegroundColor = foregroundColor

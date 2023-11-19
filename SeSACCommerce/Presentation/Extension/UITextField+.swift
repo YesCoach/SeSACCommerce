@@ -20,6 +20,7 @@ extension UITextField {
         textField.placeholder = placeHolder
         textField.keyboardType = keyboardType
         textField.isSecureTextEntry = isPrivacyInput
+        textField.font = UIFont(name: Font.maplestory, size: 14.0)
         return textField
     }
 

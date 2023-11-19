@@ -50,6 +50,8 @@ final class SignUpViewController: BaseViewController {
     private let viewModel: SignUpViewModel
     private let disposeBag = DisposeBag()
 
+    // MARK: - Initializer
+
     init(viewModel: SignUpViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -59,10 +61,17 @@ final class SignUpViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - LifeCycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addGestureRecognizer(backgroundTapGesture)
         bind()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        view.endEditing(true)
     }
 
     override func configureUI() {

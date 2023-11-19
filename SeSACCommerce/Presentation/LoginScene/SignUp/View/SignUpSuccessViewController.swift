@@ -16,7 +16,7 @@ final class SignUpSuccessViewController: BaseViewController {
         label.text = """
                         \(nickname)님 어서오세요!!
                         """
-        label.font = .systemFont(ofSize: 18.0, weight: .semibold)
+        label.font = UIFont(name: Font.maplestory, size: 18.0)
         label.textColor = .label
         return label
     }()
