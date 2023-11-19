@@ -26,8 +26,6 @@ final class SignUpViewModel: BaseViewModel {
         let signUpResponse: PublishRelay<Result<String, Error>>
     }
 
-    private let signUpInfo = PublishSubject<SignUpInfo>()
-
     private let loginRepository: LoginRepository
     private let disposeBag = DisposeBag()
 

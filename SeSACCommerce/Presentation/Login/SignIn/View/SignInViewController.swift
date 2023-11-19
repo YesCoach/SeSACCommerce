@@ -157,7 +157,7 @@ private extension SignInViewController {
                 case .success:
                     print("로그인 성공")
                 case .failure(let error):
-                    print(error.message)
+                    print(error.localizedDescription)
                 }
             }
             .disposed(by: disposeBag)

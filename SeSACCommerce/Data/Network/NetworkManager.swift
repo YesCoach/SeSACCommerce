@@ -17,6 +17,7 @@ enum NetworkResult<T: Decodable> {
 enum NetworkError: Int, Error {
     case invalidData = 0
     case badRequest = 400
+    case unAuthorized = 401
     case conflict = 409
     case invalidKey = 420
     case tooManyRequest = 429
@@ -43,7 +44,6 @@ final class NetworkManager: NetworkService {
                 case .success(let response):
                     guard let data = try? response.map(K.self) else {
                         single(.success(.failure(.invalidData)))
-//                        single(.failure(NetworkError.invalidData))
                         return
                     }
                     single(.success(.success(data)))
@@ -59,6 +59,6 @@ final class NetworkManager: NetworkService {
             }
             return Disposables.create()
         }
-        .debug(#function, trimOutput: true)
+        .debug(#function, trimOutput: false)
     }
 }

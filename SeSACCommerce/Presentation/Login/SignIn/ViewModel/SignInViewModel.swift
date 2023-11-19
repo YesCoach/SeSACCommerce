@@ -11,9 +11,9 @@ import RxRelay
 
 final class SignInViewModel: BaseViewModel {
 
-    enum SignInError: Error {
-        case wrongPassword
-        case noUserInfo
+    enum SignInError: Int, Error {
+        case wrongPassword = 400
+        case noUserInfo = 401
 
         var message: String {
             switch self {
@@ -31,14 +31,19 @@ final class SignInViewModel: BaseViewModel {
 
     struct Output {
         let isSignInPossible: BehaviorRelay<Bool>
-        let signInResponse: PublishRelay<Result<Void, SignInError>>
+        let signInResponse: PublishRelay<Result<Void, Error>>
     }
 
+    private let loginRepository: LoginRepository
     private let disposeBag = DisposeBag()
+
+    init(loginRepository: LoginRepository) {
+        self.loginRepository = loginRepository
+    }
 
     func transform(input: Input) -> Output {
         let isSignInPossible = BehaviorRelay(value: false)
-        let signInResponse = PublishRelay<Result<Void, SignInError>>()
+        let signInResponse = PublishRelay<Result<Void, Error>>()
 
         let signInRequest = Observable.combineLatest(input.emailText, input.password)
 
@@ -49,9 +54,22 @@ final class SignInViewModel: BaseViewModel {
             }
             .disposed(by: disposeBag)
 
-//        input.didSignInButtonTapped
-//            .withLatestFrom(signInRequest)
-//            .flatMapLatest {  }
+        input.didSignInButtonTapped
+            .withLatestFrom(signInRequest)
+            .flatMapLatest { self.loginRepository.requestLogin(email: $0.0, password: $0.1) }
+            .subscribe(with: self) { owner, result in
+                switch result {
+                case .success(let response):
+                    signInResponse.accept(.success(()))
+                case .failure(let error):
+                    if let signInError = SignInError(rawValue: error.rawValue) {
+                        signInResponse.accept(.failure(signInError))
+                    } else {
+                        signInResponse.accept(.failure(error))
+                    }
+                }
+            }
+            .disposed(by: disposeBag)
 
 
         return Output(isSignInPossible: isSignInPossible, signInResponse: signInResponse)

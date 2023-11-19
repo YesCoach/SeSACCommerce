@@ -19,6 +19,12 @@ final class DefaultLoginRepository {
 }
 
 extension DefaultLoginRepository: LoginRepository {
+
+    func requestLogin(email: String, password: String) -> Single<NetworkResult<LoginResponse>> {
+        let requestBody = LoginRequest(email: email, password: password)
+        return networkService.request(target: SeSACAPI.login(requestBody: requestBody))
+    }
+
     func requestValidateEmail(email: String) -> Single<NetworkResult<ValidateEmailResponse>> {
         let requestBody = ValidateEmailRequest(email: email)
         return networkService

@@ -29,8 +29,16 @@ extension DIContainer {
         return SignUpViewModel(loginRepository: makeLoginRepository())
     }
 
+    func makeSignInViewModel() -> SignInViewModel {
+        return SignInViewModel(loginRepository: makeLoginRepository())
+    }
+
     func makeSignUpViewController() -> SignUpViewController {
         return SignUpViewController(viewModel: makeSignUpViewModel())
+    }
+
+    func makeSignInViewController() -> SignInViewController {
+        return SignInViewController(viewModel: makeSignInViewModel())
     }
 
     
