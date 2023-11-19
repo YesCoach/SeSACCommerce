@@ -45,7 +45,13 @@ final class SignUpViewModel: BaseViewModel {
 
         // MARK: 이메일 검증
         input.emailText
+            .map {
+                emailValidation.accept(false)
+                errorText.accept("")
+                return $0
+            }
             .debounce(.seconds(1), scheduler: MainScheduler.instance)
+            .filter { !$0.isEmpty }
             .flatMapLatest { self.loginRepository.requestValidateEmail(email: $0) }
             .subscribe(
                 with: self,
@@ -53,13 +59,14 @@ final class SignUpViewModel: BaseViewModel {
                     switch result {
                     case .success:
                         emailValidation.accept(true)
+                        errorText.accept("사용가능한 이메일이에요")
                     case .failure(let error):
                         emailValidation.accept(false)
                         switch error {
                         case .badRequest:
-                            errorText.accept("이메일을 입력해주세요.")
+                            errorText.accept("이메일을 입력해주세요")
                         case .conflict:
-                            errorText.accept("이미 사용중인 이메일이에요.")
+                            errorText.accept("이미 사용중인 이메일이에요")
                         default:
                             debugPrint(error)
                         }
@@ -67,6 +74,7 @@ final class SignUpViewModel: BaseViewModel {
                 }
             )
             .disposed(by: disposeBag)
+
         // MARK: 입력값 + 이메일 유효성
         // Observable: Unicast
         // Observable + share: Multicast

@@ -13,9 +13,8 @@ final class SignUpViewController: BaseViewController {
 
     private let contentView: UIView = UIView()
 
-    private lazy var emailTextField: UITextField = .roundTextField(
-        placeHolder: "이메일을 입력하세요",
-        keyboardType: .default
+    private lazy var emailTextField: ValidationTextField = ValidationTextField(
+        placeholder: "이메일을 입력하세요"
     )
 
     private lazy var passwordTextField: UITextField = .roundTextField(
@@ -97,7 +96,7 @@ final class SignUpViewController: BaseViewController {
         }
 
         passwordTextField.snp.makeConstraints {
-            $0.top.equalTo(emailTextField.snp.bottom).offset(20)
+            $0.top.equalTo(emailTextField.snp.bottom).offset(24)
             $0.horizontalEdges.equalTo(emailTextField)
             $0.height.equalTo(emailTextField)
         }
@@ -131,7 +130,8 @@ private extension SignUpViewController {
 
     func bind() {
         let input = SignUpViewModel.Input(
-            emailText: emailTextField.rx.text.orEmpty.asObservable(),
+            emailText: emailTextField.rx.controlEvent(.editingChanged)
+                .withLatestFrom(emailTextField.rx.text.orEmpty.asObservable()),
             passwordText: passwordTextField.rx.text.orEmpty.asObservable(),
             nicknameText: nicknameTextField.rx.text.orEmpty.asObservable(),
             phoneNumberText: phoneNumTextField.rx.text.orEmpty.asObservable(),
@@ -139,7 +139,7 @@ private extension SignUpViewController {
         )
 
         let output = viewModel.transform(input: input)
-        
+
         output.signUpValidation
             .asDriver()
             .drive(signUpButton.rx.isEnabled)
@@ -160,13 +160,12 @@ private extension SignUpViewController {
         output.emailValidation
             .asDriver()
             .map { $0 ? UIColor.systemGreen : UIColor.systemRed }
-            .drive(emailTextField.rx.tintColor)
+            .drive(emailTextField.messageLabel.rx.textColor)
             .disposed(by: disposeBag)
         
         output.errorText
-            .bind(with: self) { owner, text in
-                print(text)
-            }
+            .asDriver(onErrorJustReturn: "")
+            .drive(emailTextField.messageLabel.rx.text)
             .disposed(by: disposeBag)
     }
 }
