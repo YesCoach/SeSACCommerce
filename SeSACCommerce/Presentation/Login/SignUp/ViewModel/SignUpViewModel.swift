@@ -83,7 +83,8 @@ final class SignUpViewModel: BaseViewModel {
             input.nicknameText,
             input.phoneNumberText,
             emailValidation
-        ).debug()
+        )
+            .share()
 
         // MARK: 회원가입 요청데이터 생성
         let signUpInfo = signUpInput

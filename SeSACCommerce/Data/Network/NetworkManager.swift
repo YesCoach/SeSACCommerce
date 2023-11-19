@@ -38,10 +38,10 @@ final class NetworkManager: NetworkService {
     func request<T: TargetType, K: Decodable>(target: T) -> Single<NetworkResult<K>> {
         return Single<NetworkResult<K>>.create { (single) -> Disposable in
             let provider = MoyaProvider<T>()
-            provider
-                .request(target) { result in
+            provider.request(target) { result in
                 switch result {
                 case .success(let response):
+                    dump(response)
                     guard let data = try? response.map(K.self) else {
                         single(.success(.failure(.invalidData)))
                         return

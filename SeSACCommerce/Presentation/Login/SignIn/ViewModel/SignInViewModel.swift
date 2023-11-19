@@ -45,9 +45,10 @@ final class SignInViewModel: BaseViewModel {
         let isSignInPossible = BehaviorRelay(value: false)
         let signInResponse = PublishRelay<Result<Void, Error>>()
 
-        let signInRequest = Observable.combineLatest(input.emailText, input.password)
+        let signInInput = Observable.combineLatest(input.emailText, input.password)
+            .share()
 
-        signInRequest
+        signInInput
             .map { !$0.0.isEmpty && !$0.1.isEmpty }
             .bind { isPossible in
                 isSignInPossible.accept(isPossible)
@@ -55,7 +56,7 @@ final class SignInViewModel: BaseViewModel {
             .disposed(by: disposeBag)
 
         input.didSignInButtonTapped
-            .withLatestFrom(signInRequest)
+            .withLatestFrom(signInInput)
             .flatMapLatest { self.loginRepository.requestLogin(email: $0.0, password: $0.1) }
             .subscribe(with: self) { owner, result in
                 switch result {
