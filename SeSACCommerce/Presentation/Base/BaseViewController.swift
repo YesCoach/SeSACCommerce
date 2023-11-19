@@ -24,4 +24,10 @@ class BaseViewController: UIViewController {
     func configureUI() { }
     func configureLayout() { }
     func configureNavigationBar() { }
+
+    func presentAlert(title: String = "", message: String = "") {
+        let alert = UIAlertController.simpleConfirmAlert(title: title, message: message)
+        present(alert, animated: true)
+    }
+
 }

@@ -31,7 +31,8 @@ final class SignInViewModel: BaseViewModel {
 
     struct Output {
         let isSignInPossible: BehaviorRelay<Bool>
-        let signInResponse: PublishRelay<Result<Void, Error>>
+        let signInSuccess: PublishRelay<Void>
+        let signInFail: PublishRelay<(Error, String)>
     }
 
     private let loginRepository: LoginRepository
@@ -43,7 +44,8 @@ final class SignInViewModel: BaseViewModel {
 
     func transform(input: Input) -> Output {
         let isSignInPossible = BehaviorRelay(value: false)
-        let signInResponse = PublishRelay<Result<Void, Error>>()
+        let signInSuccess = PublishRelay<Void>()
+        let signInFail = PublishRelay<(Error, String)>()
 
         let signInInput = Observable.combineLatest(input.emailText, input.password)
             .share()
@@ -57,23 +59,27 @@ final class SignInViewModel: BaseViewModel {
 
         input.didSignInButtonTapped
             .withLatestFrom(signInInput)
+            .throttle(.seconds(1), scheduler: MainScheduler.instance)
             .flatMapLatest { self.loginRepository.requestLogin(email: $0.0, password: $0.1) }
             .subscribe(with: self) { owner, result in
                 switch result {
                 case .success(let response):
-                    signInResponse.accept(.success(()))
+                    signInSuccess.accept(())
                 case .failure(let error):
                     if let signInError = SignInError(rawValue: error.rawValue) {
-                        signInResponse.accept(.failure(signInError))
+                        signInFail.accept((signInError, signInError.message))
                     } else {
-                        signInResponse.accept(.failure(error))
+                        signInFail.accept((error, error.localizedDescription))
                     }
                 }
             }
             .disposed(by: disposeBag)
 
-
-        return Output(isSignInPossible: isSignInPossible, signInResponse: signInResponse)
+        return Output(
+            isSignInPossible: isSignInPossible,
+            signInSuccess: signInSuccess,
+            signInFail: signInFail
+        )
     }
 }
 

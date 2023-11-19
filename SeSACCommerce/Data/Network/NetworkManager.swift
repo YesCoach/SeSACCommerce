@@ -43,15 +43,24 @@ final class NetworkManager: NetworkService {
                 case .success(let response):
                     dump(response)
                     guard let data = try? response.map(K.self) else {
-                        single(.success(.failure(.invalidData)))
+                        single(.success(.failure(NetworkError.invalidData)))
                         return
                     }
                     single(.success(.success(data)))
                 case .failure(let error):
+
+                    // onError 하면 안되는 이유
+                    // 서버 통신 에러 발생(23/11/19_18:00)
+                    // onError로 방출하면 구현 방식에 따라 viewModel에서 문제가 발생할 수 있음.
+                    // 1. request를 단일 스트림으로 사용할 경우 -> 문제발생 X
+                    // 2. request를 flatMap으로 스트림을 합쳐서 사용할 경우
+                    // 합쳐진 스트림에서 Error가 발생한거기 때문에 해당 옵저버블은 dispose 됨 -> 구독 끊김
+
                     guard let statusCode = error.response?.statusCode,
                           let networkError = NetworkError(rawValue: statusCode)
                     else {
-                        single(.failure(error))
+                        // single(.failure(error))
+                        single(.success(.failure(NetworkError.serverError)))
                         return
                     }
                     single(.success(.failure(networkError)))
