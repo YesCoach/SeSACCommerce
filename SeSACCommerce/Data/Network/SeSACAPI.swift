@@ -10,19 +10,26 @@ import Moya
 
 enum SeSACAPI {
 
+    // MARK: - GET
+
+    case refresh
+
     // MARK: - POST
 
     case signUp(requestBody: SignUpRequest)
     case validateEmail(requestBody: ValidateEmailRequest)
     case login(requestBody: LoginRequest)
+
 }
 
 extension SeSACAPI: TargetType {
 
-    var baseURL: URL { URL(string: "http://lslp.sesac.kr:27820")! }
+    var baseURL: URL { URL(string: Config.baseURL)! }
 
     var path: String {
         switch self {
+        case .refresh:
+            return "/refresh"
         case .signUp:
             return "/join"
         case .validateEmail:
@@ -34,6 +41,8 @@ extension SeSACAPI: TargetType {
 
     var method: Moya.Method {
         switch self {
+        case .refresh:
+            return .get
         case .signUp, .validateEmail, .login:
             return .post
         }
@@ -47,14 +56,20 @@ extension SeSACAPI: TargetType {
             return .requestJSONEncodable(requestBody)
         case .login(let requestBody):
             return .requestJSONEncodable(requestBody)
+        default:
+            return .requestPlain
         }
     }
 
     var headers: [String: String]? {
         switch self {
-        default:
+        case .signUp, .validateEmail, .login:
             return [
                 "Content-Type": "application/json",
+                "SesacKey": APIKey.SeSACKey
+            ]
+        default:
+            return [
                 "SesacKey": APIKey.SeSACKey
             ]
         }

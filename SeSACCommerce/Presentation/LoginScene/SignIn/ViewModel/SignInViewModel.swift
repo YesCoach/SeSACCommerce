@@ -65,6 +65,8 @@ final class SignInViewModel: BaseViewModel {
                 switch result {
                 case .success(let response):
                     signInSuccess.accept(())
+                    KeychainService.shared.create(account: .accessToken, value: response.token)
+                    KeychainService.shared.create(account: .refreshToken, value: response.refreshToken)
                 case .failure(let error):
                     if let signInError = SignInError(rawValue: error.rawValue) {
                         signInFail.accept((signInError, signInError.message))

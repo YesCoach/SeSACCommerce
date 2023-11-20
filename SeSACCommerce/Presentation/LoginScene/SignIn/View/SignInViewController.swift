@@ -51,6 +51,15 @@ final class SignInViewController: BaseViewController {
         action: #selector(didBackgroundTouched)
     )
 
+    private lazy var refreshButton: UIButton = {
+        let button = UIButton()
+        button.configuration = .textButtonConfig(
+            title: "리프레시 하기",
+            image: .init(systemName: "person"),
+            foregroundColor: .systemMint)
+        return button
+    }()
+
     // MARK: - Property
 
     private let viewModel: SignInViewModel
@@ -87,13 +96,19 @@ final class SignInViewController: BaseViewController {
         super.configureLayout()
 
         [
-            idTextField, passwordTextField, signInButton, signUpButton
+            idTextField, passwordTextField, signInButton, signUpButton, refreshButton
         ].forEach { contentView.addSubview($0) }
 
         view.addSubview(contentView)
+
         contentView.snp.makeConstraints {
             $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
             $0.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
+        }
+
+        refreshButton.snp.makeConstraints {
+            $0.bottom.equalTo(idTextField.snp.top).offset(10)
+            $0.size.equalTo(50)
         }
 
         idTextField.snp.makeConstraints {
@@ -143,6 +158,22 @@ private extension SignInViewController {
                     DIContainer.shared.makeSignUpViewController(),
                     animated: true
                 )
+            }
+            .disposed(by: disposeBag)
+
+        refreshButton.rx.tap
+            .bind(with: self) { owner, _ in
+                let single: Single<NetworkResult<RefreshResponse>>
+                single = NetworkManager.shared.request(target: .refresh)
+                single.subscribe(with: self) { owner, result in
+                    switch result {
+                    case .success(let response):
+                        print(response.token)
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
+                }
+                .dispose()
             }
             .disposed(by: disposeBag)
 

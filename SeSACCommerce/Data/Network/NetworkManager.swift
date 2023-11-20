@@ -26,23 +26,24 @@ enum NetworkError: Int, Error {
 }
 
 protocol NetworkService {
-    func request<T: TargetType, K: Decodable>(target: T) -> Single<NetworkResult<K>>
+    func request<T: Decodable>(target: SeSACAPI) -> Single<NetworkResult<T>>
 }
 
 final class NetworkManager: NetworkService {
 
     static let shared = NetworkManager()
 
+    private let provider = MoyaProvider<SeSACAPI>(session: Session(interceptor: TokenInterceptor.shared))
+
     private init() { }
 
-    func request<T: TargetType, K: Decodable>(target: T) -> Single<NetworkResult<K>> {
-        return Single<NetworkResult<K>>.create { (single) -> Disposable in
-            let provider = MoyaProvider<T>()
-            provider.request(target) { result in
+    func request<T: Decodable>(target: SeSACAPI) -> Single<NetworkResult<T>> {
+        return Single<NetworkResult<T>>.create { (single) -> Disposable in
+            self.provider.request(target) { result in
                 switch result {
                 case .success(let response):
                     dump(response)
-                    guard let data = try? response.map(K.self) else {
+                    guard let data = try? response.map(T.self) else {
                         single(.success(.failure(NetworkError.invalidData)))
                         return
                     }
