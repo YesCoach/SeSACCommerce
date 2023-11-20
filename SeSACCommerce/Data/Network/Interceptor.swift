@@ -1,5 +1,5 @@
 //
-//  TokenInterceptor.swift
+//  Interceptor.swift
 //  SeSACCommerce
 //
 //  Created by 박태현 on 2023/11/19.
@@ -9,9 +9,9 @@ import Foundation
 import Alamofire
 import RxSwift
 
-final class TokenInterceptor: RequestInterceptor {
+final class Interceptor: RequestInterceptor {
 
-    static let shared = TokenInterceptor()
+    static let shared = Interceptor()
 
     private init() {}
 
@@ -46,7 +46,7 @@ final class TokenInterceptor: RequestInterceptor {
         completion: @escaping (RetryResult) -> Void
     ) {
         print("retry 진입")
-        guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401
+        guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 419
         else {
             completion(.doNotRetryWithError(error))
             return
@@ -54,7 +54,7 @@ final class TokenInterceptor: RequestInterceptor {
 
         // 토큰 갱신 API 호출
         NetworkManager.shared.request(target: SeSACAPI.refresh)
-            .subscribe(with: self) { (owner: TokenInterceptor, result: NetworkResult<RefreshResponse>) in
+            .subscribe(with: self) { (owner: Interceptor, result: NetworkResult<RefreshResponse>) in
                 switch result {
                 case .success(let response):
                     KeychainService.shared.create(

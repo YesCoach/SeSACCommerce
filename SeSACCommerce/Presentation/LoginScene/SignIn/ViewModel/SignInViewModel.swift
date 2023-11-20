@@ -11,18 +11,6 @@ import RxRelay
 
 final class SignInViewModel: BaseViewModel {
 
-    enum SignInError: Int, Error {
-        case wrongPassword = 400
-        case noUserInfo = 401
-
-        var message: String {
-            switch self {
-            case .wrongPassword: return "비밀번호가 일치하지 않습니다"
-            case .noUserInfo: return "존재하지 않는 계정입니다"
-            }
-        }
-    }
-
     struct Input {
         let emailText: Observable<String>
         let password: Observable<String>
@@ -31,8 +19,7 @@ final class SignInViewModel: BaseViewModel {
 
     struct Output {
         let isSignInPossible: BehaviorRelay<Bool>
-        let signInSuccess: PublishRelay<Void>
-        let signInFail: PublishRelay<(Error, String)>
+        let signInResponse: PublishRelay<CustomResult<Void>>
     }
 
     private let loginRepository: LoginRepository
@@ -44,8 +31,7 @@ final class SignInViewModel: BaseViewModel {
 
     func transform(input: Input) -> Output {
         let isSignInPossible = BehaviorRelay(value: false)
-        let signInSuccess = PublishRelay<Void>()
-        let signInFail = PublishRelay<(Error, String)>()
+        let signInResponse = PublishRelay<CustomResult<Void>>()
 
         let signInInput = Observable.combineLatest(input.emailText, input.password)
             .share()
@@ -64,23 +50,22 @@ final class SignInViewModel: BaseViewModel {
             .subscribe(with: self) { owner, result in
                 switch result {
                 case .success(let response):
-                    signInSuccess.accept(())
+                    signInResponse.accept(.success(()))
                     KeychainService.shared.create(account: .accessToken, value: response.token)
                     KeychainService.shared.create(account: .refreshToken, value: response.refreshToken)
                 case .failure(let error):
-                    if let signInError = SignInError(rawValue: error.rawValue) {
-                        signInFail.accept((signInError, signInError.message))
-                    } else {
-                        signInFail.accept((error, error.localizedDescription))
+                    guard let signInError = SignInError(rawValue: error.rawValue) else {
+                        signInResponse.accept(.failure(error))
+                        return
                     }
+                    signInResponse.accept(.failure(signInError))
                 }
             }
             .disposed(by: disposeBag)
 
         return Output(
             isSignInPossible: isSignInPossible,
-            signInSuccess: signInSuccess,
-            signInFail: signInFail
+            signInResponse: signInResponse
         )
     }
 }

@@ -162,7 +162,7 @@ private extension SignUpViewController {
                     let vc = SignUpSuccessViewController(nickname: nick)
                     owner.navigationController?.pushViewController(vc, animated: true)
                 case .failure(let error):
-                    print(error.localizedDescription)
+                    owner.presentAlert(title: error.message)
                 }
             }
             .disposed(by: disposeBag)

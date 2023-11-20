@@ -23,7 +23,7 @@ final class SignUpViewModel: BaseViewModel {
         let emailValidation: BehaviorRelay<Bool>
         let errorText: PublishRelay<String>
         let signUpValidation: BehaviorRelay<Bool>
-        let signUpResponse: PublishRelay<Result<String, Error>>
+        let signUpResponse: PublishRelay<CustomResult<String>>
     }
 
     private let loginRepository: LoginRepository
@@ -39,7 +39,7 @@ final class SignUpViewModel: BaseViewModel {
         let emailValidation: BehaviorRelay<Bool> = BehaviorRelay(value: false)
         let errorText = PublishRelay<String>()
         let signUpValidation = BehaviorRelay<Bool>(value: false)
-        let signUpResponse = PublishRelay<Result<String, Error>>()
+        let signUpResponse = PublishRelay<CustomResult<String>>()
 
         // MARK: 이메일 검증
         input.emailText
@@ -59,15 +59,13 @@ final class SignUpViewModel: BaseViewModel {
                         emailValidation.accept(true)
                         errorText.accept("사용가능한 이메일이에요")
                     case .failure(let error):
-                        emailValidation.accept(false)
-                        switch error {
-                        case .badRequest:
-                            errorText.accept("이메일을 입력해주세요")
-                        case .conflict:
-                            errorText.accept("이미 사용중인 이메일이에요")
-                        default:
-                            debugPrint(error)
+                        guard let customError = ValidateEmailError(rawValue: error.rawValue) else {
+                            errorText.accept(error.message)
+                            emailValidation.accept(false)
+                            return
                         }
+                        errorText.accept(customError.message)
+                        emailValidation.accept(false)
                     }
                 }
             )
@@ -123,7 +121,11 @@ final class SignUpViewModel: BaseViewModel {
                 case .success(let response):
                     signUpResponse.accept(.success(response.nick))
                 case .failure(let error):
-                    signUpResponse.accept(.failure(error))
+                    guard let customError = SignUpError(rawValue: error.rawValue) else {
+                        signUpResponse.accept(.failure(error))
+                        return
+                    }
+                    signUpResponse.accept(.failure(customError))
                 }
             }
             .disposed(by: disposeBag)

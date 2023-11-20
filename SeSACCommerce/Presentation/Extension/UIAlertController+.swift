@@ -15,7 +15,7 @@ extension UIAlertController {
         let action = UIAlertAction(title: "확인", style: .default)
 
         let attributeString = NSMutableAttributedString(string: title)
-        let font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
+        let font = UIFont(name: Font.maplestory, size: 16.0)
         attributeString.addAttribute(.font, value: font, range: (title as NSString).range(of: "\(title)"))
 
         alert.setValue(attributeString, forKey: "attributedTitle")

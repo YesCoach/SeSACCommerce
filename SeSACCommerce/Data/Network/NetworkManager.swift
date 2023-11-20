@@ -9,20 +9,9 @@ import Foundation
 import Moya
 import RxSwift
 
-enum NetworkResult<T: Decodable> {
+@frozen enum NetworkResult<T: Decodable> {
     case success(T)
-    case failure(NetworkError)
-}
-
-enum NetworkError: Int, Error {
-    case invalidData = 0
-    case badRequest = 400
-    case unAuthorized = 401
-    case conflict = 409
-    case invalidKey = 420
-    case tooManyRequest = 429
-    case noResponse = 444
-    case serverError = 500
+    case failure(LoggableError)
 }
 
 protocol NetworkService {
@@ -33,7 +22,7 @@ final class NetworkManager: NetworkService {
 
     static let shared = NetworkManager()
 
-    private let provider = MoyaProvider<SeSACAPI>(session: Session(interceptor: TokenInterceptor.shared))
+    private let provider = MoyaProvider<SeSACAPI>(session: Session(interceptor: Interceptor.shared))
 
     private init() { }
 

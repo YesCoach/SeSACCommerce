@@ -190,15 +190,14 @@ private extension SignInViewController {
             .drive(signInButton.rx.isEnabled)
             .disposed(by: disposeBag)
 
-        output.signInSuccess
-            .bind(with: self) { owner, _ in
-                print("로그인 성공")
-            }
-            .disposed(by: disposeBag)
-
-        output.signInFail
-            .bind(with: self) { owner, error in
-                owner.presentAlert(title: error.1)
+        output.signInResponse
+            .bind(with: self) { owner, result in
+                switch result {
+                case .success:
+                    print("로그인 성공")
+                case .failure(let error):
+                    owner.presentAlert(title: error.message)
+                }
             }
             .disposed(by: disposeBag)
     }
