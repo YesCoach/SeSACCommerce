@@ -10,5 +10,6 @@ import Foundation
 enum Config {
 
     static let baseURL: String = "http://lslp.sesac.kr:27820"
+    static let testURL: String = "http://lslp.sesac.kr:27812"
 
 }

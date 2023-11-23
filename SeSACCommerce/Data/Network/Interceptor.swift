@@ -19,7 +19,9 @@ final class Interceptor: RequestInterceptor {
 
         let path = urlRequest.url?.path(percentEncoded: true)
 
-        guard urlRequest.url?.absoluteString.hasPrefix(Config.baseURL) == true,
+        dump(urlRequest)
+
+        guard urlRequest.url?.absoluteString.hasPrefix(SeSACAPI.serverURL.absoluteString) == true,
               ["/join", "/login", "/validation"].contains(path) == false,
               let accessToken = KeychainService.shared.accessToken
         else {

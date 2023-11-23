@@ -37,9 +37,11 @@ final class SignInViewModel: BaseViewModel {
             .share()
 
         signInInput
-            .map { !$0.0.isEmpty && !$0.1.isEmpty }
-            .bind { isPossible in
+            .map { return (!$0.0.isEmpty && !$0.1.isEmpty, $0.0, $0.1) }
+            .bind { (isPossible, email, password) in
                 isSignInPossible.accept(isPossible)
+                KeychainService.shared.create(account: .userID, value: email)
+                KeychainService.shared.create(account: .userPassword, value: password)
             }
             .disposed(by: disposeBag)
 

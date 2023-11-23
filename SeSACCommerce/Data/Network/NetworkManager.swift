@@ -58,6 +58,6 @@ final class NetworkManager: NetworkService {
             }
             return Disposables.create()
         }
-        .debug(#function, trimOutput: false)
+//        .debug(#function, trimOutput: false)
     }
 }

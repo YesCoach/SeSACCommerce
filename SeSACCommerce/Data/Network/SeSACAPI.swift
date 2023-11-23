@@ -10,6 +10,8 @@ import Moya
 
 enum SeSACAPI {
 
+    static let serverURL: URL = URL(string: Config.testURL)!
+
     // MARK: - GET
 
     case refresh
@@ -24,7 +26,9 @@ enum SeSACAPI {
 
 extension SeSACAPI: TargetType {
 
-    var baseURL: URL { URL(string: Config.baseURL)! }
+    var baseURL: URL {
+        return Self.serverURL
+    }
 
     var path: String {
         switch self {

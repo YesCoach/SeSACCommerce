@@ -13,6 +13,8 @@ final class KeychainService {
     enum KeychainItem: String {
         case accessToken = "accessToken"
         case refreshToken = "refreshToken"
+        case userID = "userID"
+        case userPassword = "userPassword"
     }
 
     static let shared = KeychainService()

@@ -11,6 +11,7 @@ enum NetworkError: Int, LoggableError {
     case invalidData = 0
     case badRequest = 400
     case unAuthorized = 401
+    case forbidden = 403
     case conflict = 409
     case invalidKey = 420
     case tooManyRequest = 429

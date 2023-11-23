@@ -17,7 +17,7 @@ final class SignInViewController: BaseViewController {
 
     private lazy var idTextField: UITextField = .roundTextField(
         placeHolder: "이메일을 입력하세요",
-        keyboardType: .default
+        keyboardType: .emailAddress
     )
 
     private lazy var passwordTextField: UITextField = .roundTextField(
@@ -169,11 +169,12 @@ private extension SignInViewController {
                     switch result {
                     case .success(let response):
                         print(response.token)
+                        KeychainService.shared.create(account: .accessToken, value: response.token)
                     case .failure(let error):
                         print(error.localizedDescription)
                     }
                 }
-                .dispose()
+                .disposed(by: self.disposeBag)
             }
             .disposed(by: disposeBag)
 
@@ -195,6 +196,10 @@ private extension SignInViewController {
                 switch result {
                 case .success:
                     print("로그인 성공")
+                    owner.navigationController?.pushViewController(
+                        HomeViewController(nibName: nil, bundle: nil),
+                        animated: true
+                    )
                 case .failure(let error):
                     owner.presentAlert(title: error.message)
                 }
