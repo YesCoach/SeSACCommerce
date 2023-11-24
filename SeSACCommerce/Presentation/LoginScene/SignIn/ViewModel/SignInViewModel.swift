@@ -100,9 +100,7 @@ final class SignInViewModel: BaseViewModel {
                         else {
                             let keychainItems: [KeychainService.KeychainItem] = [
                                 .accessToken,
-                                .refreshToken,
-                                .userID,
-                                .userPassword
+                                .refreshToken
                             ]
                             keychainItems.forEach {
                                 KeychainService.shared.delete(account: $0)
