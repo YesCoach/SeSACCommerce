@@ -232,10 +232,7 @@ private extension SignInViewController {
             .bind(with: self) { owner, isLogin in
                 if isLogin {
                     print("로그인 성공")
-                    owner.navigationController?.pushViewController(
-                        HomeViewController(nibName: nil, bundle: nil),
-                        animated: true
-                    )
+                    owner.changeRootVC()
                 }
             }
             .disposed(by: disposeBag)
@@ -245,6 +242,17 @@ private extension SignInViewController {
                 owner.presentAlert(title: message)
             }
             .disposed(by: disposeBag)
+    }
+
+    func changeRootVC() {
+        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        let sceneDelegate = windowScene?.delegate as? SceneDelegate
+
+        let viewController = HomeViewController()
+        let nav = UINavigationController(rootViewController: viewController)
+
+        sceneDelegate?.window?.rootViewController = nav
+        sceneDelegate?.window?.makeKeyAndVisible()
     }
 
 }
