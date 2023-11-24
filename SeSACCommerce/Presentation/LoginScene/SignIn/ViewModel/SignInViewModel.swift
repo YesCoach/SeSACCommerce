@@ -20,6 +20,10 @@ final class SignInViewModel: BaseViewModel {
     struct Output {
         let isSignInPossible: BehaviorRelay<Bool>
         let signInResponse: PublishRelay<CustomResult<Void>>
+        let autoSignInResponse: PublishRelay<Bool>
+        let autoSignInFailureMessage: PublishRelay<String>
+
+        let isLoading: BehaviorRelay<Bool>
     }
 
     private let loginRepository: LoginRepository
@@ -32,29 +36,41 @@ final class SignInViewModel: BaseViewModel {
     func transform(input: Input) -> Output {
         let isSignInPossible = BehaviorRelay(value: false)
         let signInResponse = PublishRelay<CustomResult<Void>>()
+        let autoSignInResponse = PublishRelay<Bool>()
+        let autoSignInFailureMessage = PublishRelay<String>()
+        let isLoading = BehaviorRelay(value: false)
 
         let signInInput = Observable.combineLatest(input.emailText, input.password)
             .share()
 
         signInInput
-            .map { return (!$0.0.isEmpty && !$0.1.isEmpty, $0.0, $0.1) }
-            .bind { (isPossible, email, password) in
+            .map { return (!$0.0.isEmpty && !$0.1.isEmpty) }
+            .bind { isPossible in
                 isSignInPossible.accept(isPossible)
-                KeychainService.shared.create(account: .userID, value: email)
-                KeychainService.shared.create(account: .userPassword, value: password)
             }
             .disposed(by: disposeBag)
 
         input.didSignInButtonTapped
             .withLatestFrom(signInInput)
             .throttle(.seconds(1), scheduler: MainScheduler.instance)
-            .flatMapLatest { self.loginRepository.requestLogin(email: $0.0, password: $0.1) }
+            .flatMapLatest {
+                isLoading.accept(true)
+                return self.loginRepository.requestLogin(email: $0.0, password: $0.1)
+            }
             .subscribe(with: self) { owner, result in
+                isLoading.accept(false)
                 switch result {
                 case .success(let response):
+                    KeychainService.shared.create(
+                        account: .accessToken,
+                        value: response.token
+                    )
+                    KeychainService.shared.create(
+                        account: .refreshToken,
+                        value: response.refreshToken
+                    )
+                    UserDefaultsManager.isLogined = true
                     signInResponse.accept(.success(()))
-                    KeychainService.shared.create(account: .accessToken, value: response.token)
-                    KeychainService.shared.create(account: .refreshToken, value: response.refreshToken)
                 case .failure(let error):
                     guard let signInError = SignInError(rawValue: error.rawValue) else {
                         signInResponse.accept(.failure(error))
@@ -65,9 +81,48 @@ final class SignInViewModel: BaseViewModel {
             }
             .disposed(by: disposeBag)
 
+        if let _ = KeychainService.shared.accessToken,
+           let _ = KeychainService.shared.refreshToken {
+            isLoading.accept(true)
+            loginRepository.requestRefreshToken()
+                .subscribe(with: self) { owner, result in
+                    isLoading.accept(false)
+                    switch result {
+                    case .success(let response):
+                        KeychainService.shared.create(
+                            account: .accessToken,
+                            value: response.token
+                        )
+                        autoSignInResponse.accept(true)
+                    case .failure(let error):
+                        guard let refreshError = RefreshError(rawValue: error.rawValue),
+                              refreshError == .refreshFailed
+                        else {
+                            let keychainItems: [KeychainService.KeychainItem] = [
+                                .accessToken,
+                                .refreshToken,
+                                .userID,
+                                .userPassword
+                            ]
+                            keychainItems.forEach {
+                                KeychainService.shared.delete(account: $0)
+                            }
+                            UserDefaultsManager.isLogined = false
+                            autoSignInFailureMessage.accept("로그아웃되었습니다. 다시 로그인해주세요.")
+                            return
+                        }
+                        autoSignInResponse.accept(true)
+                    }
+                }
+                .disposed(by: disposeBag)
+        }
+
         return Output(
             isSignInPossible: isSignInPossible,
-            signInResponse: signInResponse
+            signInResponse: signInResponse,
+            autoSignInResponse: autoSignInResponse,
+            autoSignInFailureMessage: autoSignInFailureMessage,
+            isLoading: isLoading
         )
     }
 }

@@ -45,5 +45,9 @@ extension DefaultLoginRepository: LoginRepository {
             .request(target: SeSACAPI.signUp(requestBody: requestBody))
     }
     
-    
+    func requestRefreshToken() -> Single<NetworkResult<RefreshResponse>> {
+        return networkService.request(target: SeSACAPI.refresh)
+    }
+
+
 }

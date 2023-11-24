@@ -42,3 +42,19 @@ enum SignInError: Int, LoggableError {
         }
     }
 }
+
+enum RefreshError: Int, LoggableError {
+    case uncertificatedAccessToken = 401
+    case forbidden = 403
+    case refreshFailed = 409
+    case invalidRefreshToken = 418
+
+    var message: String {
+        switch self {
+        case .uncertificatedAccessToken: return "인증할 수 없는 액세스 토큰입니다."
+        case .forbidden: return "접근권한이 없습니다."
+        case .refreshFailed: return "액세스 토큰이 만료되지 않았습니다."
+        case .invalidRefreshToken: return "리프레시 토큰이 만료되었습니다. 다시 로그인 해주세요."
+        }
+    }
+}

@@ -8,6 +8,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import NVActivityIndicatorView
 
 final class SignInViewController: BaseViewController {
 
@@ -60,6 +61,16 @@ final class SignInViewController: BaseViewController {
         return button
     }()
 
+    private lazy var activityIndicator: NVActivityIndicatorView = {
+        let activityIndicator = NVActivityIndicatorView(
+            frame: .zero,
+            type: .ballBeat,
+            color: .systemOrange,
+            padding: 10.0
+        )
+        return activityIndicator
+    }()
+
     // MARK: - Property
 
     private let viewModel: SignInViewModel
@@ -96,7 +107,8 @@ final class SignInViewController: BaseViewController {
         super.configureLayout()
 
         [
-            idTextField, passwordTextField, signInButton, signUpButton, refreshButton
+            idTextField, passwordTextField, signInButton, signUpButton,
+            refreshButton, activityIndicator
         ].forEach { contentView.addSubview($0) }
 
         view.addSubview(contentView)
@@ -132,6 +144,11 @@ final class SignInViewController: BaseViewController {
             $0.top.equalTo(signInButton.snp.bottom).offset(10)
             $0.centerX.equalToSuperview()
             $0.bottom.equalTo(contentView.snp.bottom).inset(40)
+        }
+
+        activityIndicator.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.size.equalTo(60)
         }
     }
 
@@ -203,6 +220,29 @@ private extension SignInViewController {
                 case .failure(let error):
                     owner.presentAlert(title: error.message)
                 }
+            }
+            .disposed(by: disposeBag)
+
+        output.isLoading
+            .asDriver()
+            .drive(activityIndicator.rx.isAnimation)
+            .disposed(by: disposeBag)
+
+        output.autoSignInResponse
+            .bind(with: self) { owner, isLogin in
+                if isLogin {
+                    print("로그인 성공")
+                    owner.navigationController?.pushViewController(
+                        HomeViewController(nibName: nil, bundle: nil),
+                        animated: true
+                    )
+                }
+            }
+            .disposed(by: disposeBag)
+
+        output.autoSignInFailureMessage
+            .bind(with: self) { owner, message in
+                owner.presentAlert(title: message)
             }
             .disposed(by: disposeBag)
     }

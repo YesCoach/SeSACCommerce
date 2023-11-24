@@ -41,5 +41,8 @@ extension DIContainer {
         return SignInViewController(viewModel: makeSignInViewModel())
     }
 
-    
+    func makeHomeViewController() -> HomeViewController {
+        return HomeViewController()
+    }
+
 }

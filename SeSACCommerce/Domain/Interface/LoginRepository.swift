@@ -22,4 +22,6 @@ protocol LoginRepository {
     func requestSignUp(
         signUpInfo: SignUpInfo
     ) -> Single<NetworkResult<SignUpResponse>>
+
+    func requestRefreshToken() -> Single<NetworkResult<RefreshResponse>>
 }
